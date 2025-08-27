@@ -1,14 +1,19 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { FaRegEdit, FaTrash } from "react-icons/fa";
-import { useAppSelector } from "../store/hook";
+import { useAppDispatch, useAppSelector } from "../store/hook";
 import { useNavigate } from "react-router-dom";
+import Modal from "../components/Modal";
+import { getTodos } from "../store/todoSlice";
 
 const Home = () => {
+  const dispatch = useAppDispatch()
   const reduxToken = useAppSelector((state)=>state.auth.user.token)
   const todoItems = useAppSelector((state)=> state.todo.todo)
   const localStorageToken = localStorage.getItem("userToken")
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [editValues, setEditValues] =useState<{id:number, title:string, description:string}| null>(null)
   const navigate = useNavigate()
 
   useEffect(()=>{
@@ -19,9 +24,25 @@ const Home = () => {
     navigate("/login")
   }
   },[reduxToken,localStorageToken,navigate])
+  useEffect(()=>{
+    dispatch(getTodos())
+  },[])
+  const openEditModal = useCallback(()=> setEditModalOpen(true),[])
+  const closeEditModal = useCallback(()=> setEditModalOpen(false),[])
+  const handleEditModal = async (id:number, title:string, description : string) =>{
+    if(id || title || description) {
+      setEditValues({id,title,description})
+      openEditModal
+    }
+  }
+
+
   return (
     <>
     <Navbar isLoggedIn = {isLoggedIn} />
+    {
+      editModalOpen && editValues && <Modal closeEditModal={closeEditModal} todoId={editValues?.id} oldTitle={editValues?.title} oldDescription={editValues?.description} />
+    }
       <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden mt-16">
         <div className="px-4 py-2">
           <h1 className="text-gray-800 font-bold text-2xl uppercase">
@@ -70,7 +91,7 @@ const Home = () => {
                 </span>
               </label>
               <div className="flex flex-row gap-2.5 ml-25">
-                  <FaRegEdit />
+                  <div onClick={()=>handleEditModal(todoI.id,todoI.title,todoI.description)}><FaRegEdit /></div>
                   <FaTrash />
                 </div>
             </div>
