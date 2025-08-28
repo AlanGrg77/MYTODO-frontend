@@ -16,6 +16,8 @@ const Home = () => {
   const [editValues, setEditValues] =useState<{id:number, title:string, description:string}| null>(null)
   const navigate = useNavigate()
 
+  console.log("items", todoItems)
+
   useEffect(()=>{
     if(reduxToken && localStorageToken){
     setIsLoggedIn(true)
@@ -32,7 +34,7 @@ const Home = () => {
   const handleEditModal = async (id:number, title:string, description : string) =>{
     if(id || title || description) {
       setEditValues({id,title,description})
-      openEditModal
+      openEditModal()
     }
   }
 

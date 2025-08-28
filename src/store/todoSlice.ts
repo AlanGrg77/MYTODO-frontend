@@ -28,7 +28,7 @@ export const getTodos = createAsyncThunk<ITodo[] ,void, {rejectValue : string}> 
     'todo/getTodos',
     async (_,thunkAPI) =>{
         try {
-            const response = await axios.get("http://loclahost:300/api/todo", 
+            const response = await axios.get("http://localhost:3000/api/todo", 
                 {
                     headers : {
                     Authorization : `Bearer ${localStorage.getItem("userToken")} `
@@ -47,7 +47,7 @@ export const createTodos = createAsyncThunk<ITodo[] ,void, {rejectValue : string
     'todo/createTodos',
     async (_,thunkAPI) =>{
         try {
-            const response = await axios.post("http://loclahost:300/api/todo" ,
+            const response = await axios.post("http://localhost:3000/api/todo" ,
                 {
                     headers : {
                     Authorization : `Bearer ${localStorage.getItem("userToken")} `
@@ -64,10 +64,10 @@ export const createTodos = createAsyncThunk<ITodo[] ,void, {rejectValue : string
     }
 )
 export const editTodos = createAsyncThunk<ITodo ,{id :number, data: IFormTodo }, {rejectValue : string}> (
-    'todo/createTodos',
+    'todo/editTodos',
     async ({id, data},thunkAPI) =>{
         try {
-            const response = await axios.put("http://loclahost:300/api/todo/"+id,data,  
+            const response = await axios.put("http://localhost:3000/api/todo/"+id,data,  
                 {
                     headers : {
                     Authorization : `Bearer ${localStorage.getItem("userToken")} `
@@ -86,7 +86,7 @@ export const deleteTodos = createAsyncThunk<number ,number, {rejectValue : strin
     'todo/deleteTodos',
     async (id,thunkAPI) =>{
         try {
-            await axios.delete("http://loclahost:300/api/todo/"+id,  
+            await axios.delete("http://localhost:300/api/todo/"+id,  
                 {
                     headers : {
                     Authorization : `Bearer ${localStorage.getItem("userToken")} `
@@ -105,7 +105,7 @@ export const toggleComplete = createAsyncThunk<ITodo ,number, {rejectValue : str
     'todo/toggleComplete',
     async (id,thunkAPI) =>{
         try {
-            const response = await axios.patch("http://loclahost:300/api/todo/toggle/"+id,{},  
+            const response = await axios.patch("http://localhost:3000/api/todo/toggle/"+id,{},  
                 {
                     headers : {
                     Authorization : `Bearer ${localStorage.getItem("userToken")} `
@@ -124,7 +124,11 @@ export const toggleComplete = createAsyncThunk<ITodo ,number, {rejectValue : str
 const todoSlice = createSlice({
     name : "todo",
     initialState,
-    reducers :{},
+    reducers :{
+        resetStatus : (state) =>{
+            state.status = null
+        }
+    },
     extraReducers(builder) {
         builder.addCase(getTodos.pending, (state) =>{
             state.status = Status.Loading
@@ -193,6 +197,6 @@ const todoSlice = createSlice({
         })
     }
 })
-
+export const {resetStatus} = todoSlice.actions
 export default todoSlice.reducer
 
